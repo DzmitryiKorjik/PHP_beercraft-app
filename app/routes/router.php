@@ -1,14 +1,17 @@
 <?php
 
 require_once 'app/controllers/AuthController.php';
+require_once 'app/controllers/BeerController.php';
 
 class Router
 {
     private $authController;
+    private $beerController;
 
     public function __construct()
     {
         $this->authController = new AuthController();
+        $this->beerController = new BeerController();
     }
 
     public function handleRequest()
@@ -41,7 +44,8 @@ class Router
                 break;
 
             case 'home':
-                $view = 'home';
+                $this->beerController->index('home');
+                exit();
                 break;
 
             case 'signout':
@@ -52,7 +56,6 @@ class Router
             default:
                 $view = '404';
         }
-
         require_once 'app/views/layout.php';  // Chargement du modèle
     }
 }

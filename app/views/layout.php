@@ -10,7 +10,6 @@
     <?php include 'app/views/partials/header.php'; ?>
     <main>
         <?php $file = __DIR__ . "/{$view}.php";
-        var_dump($view);
         if (file_exists($file)) {
             require $file;
         } else {
