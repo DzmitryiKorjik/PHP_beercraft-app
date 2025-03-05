@@ -126,7 +126,7 @@ class AuthController
                 }
             }
         }
-        
+        $this->render('contact', compact('errors', 'success'));        
     }
 
     // Méthode de rendu des vues

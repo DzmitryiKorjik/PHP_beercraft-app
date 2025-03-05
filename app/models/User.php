@@ -25,7 +25,6 @@ class User
     // Méthode pour créer un nouvel utilisateur
     public function createUser($username, $email, $password)
     {
-
         // Préparation de la requête SQL
         $stmt = $this->db->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
 
