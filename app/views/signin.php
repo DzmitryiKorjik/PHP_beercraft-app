@@ -1,4 +1,5 @@
 <div class="container connexion_form">
+    <!-- style="display: none;" -->
     <div id="login-form">
         <h2>Connexion</h2>
         <form id="signin-form" action="<?= BASE_URL ?>?action=signin" method="POST">

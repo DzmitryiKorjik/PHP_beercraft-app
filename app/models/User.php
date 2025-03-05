@@ -25,19 +25,12 @@ class User
     // Méthode pour créer un nouvel utilisateur
     public function createUser($username, $email, $password)
     {
-        // Vérifie si l'email est déjà enregistré
-        if ($this->getUserByEmail($email)) {
-            return "Cet email est déjà utilisé !"; // Retourne un message si l'email existe déjà
-        }
-
-        // Hachage du mot de passe avant insertion
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
         // Préparation de la requête SQL
         $stmt = $this->db->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
 
         // Exécute la requête avec les données fournies
-        if ($stmt->execute([$username, $email, $hashedPassword, 'user'])) {
+        if ($stmt->execute([$username, $email, $password, 'user'])) {
             return "Inscription réussie !"; // Si l'inscription réussie
         } else {
             return "Une erreur s'est produite lors de l'inscription."; // Si une erreur survient
@@ -45,14 +38,11 @@ class User
     }
 
 
-    // Méthode pour récupérer un utilisateur par son email
-    public function getUserByEmail($email)
+    public function getUserByUsername($username)
     {
-        // Prépare la requête SQL pour chercher l'utilisateur par email
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-
-        // Retourne les informations de l'utilisateur (ou false si non trouvé)
+        // Prépare la requête pour récupérer un utilisateur par son nom d'utilisateur
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->execute([$username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 

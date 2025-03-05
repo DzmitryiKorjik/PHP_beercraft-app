@@ -4,12 +4,23 @@
         <nav>
             <ul>
                 <li><a href="<?= BASE_URL ?>">Accueil</a></li>
-                <li><a href="<?= BASE_URL ?>">Contact</a></li>
-                <?php if (!isset($_SESSION['users'])): ?>
-                    <li><a id="conn" href="#">Connexion</a></li>
-                    <li><a id="register" href="#">Registre</a></li>
+                <li><a href="<?= BASE_URL ?>?action=contact">Contact</a></li>
+                <?php if (!empty($_SESSION['users']) && $_SESSION['users']['role'] === 'admin'): ?>
+                    <li>
+                        <a href="<?= BASE_URL ?>?action=create">Ajouter une recette</a>
+                    </li>
+                <?php endif; ?>
+                <?php if (!empty($_SESSION['users'])): ?>
+                    <li>
+                        <a href="<?= BASE_URL ?>?action=signout">Déconnexion</a>
+                    </li>
                 <?php else: ?>
-                    <li><a id="deconn" href="<?= BASE_URL ?>">Déconnexion</a></li>
+                    <li>
+                        <a href="<?= BASE_URL ?>?action=signin">Se connecter</a>
+                    </li>
+                    <li>
+                        <a href="<?= BASE_URL ?>?action=signup">S'inscrire</a>
+                    </li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -21,15 +32,4 @@
         </div>
     </div>
 </header>
-
-<!-- Formulaires de connexion et d’inscription -->
-<div id="signin-form" class="modal">
-    <span class="close-btn" onclick="closeForm('signin-form')">&times;</span>
-    <?php include 'app/views/signin.php'; ?>
-</div>
-
-<div id="signup-form" class="modal">
-    <span class="close-btn" onclick="closeForm('signup-form')">&times;</span>
-    <?php include 'app/views/signup.php'; ?>
-</div>
 

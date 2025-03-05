@@ -32,6 +32,14 @@ class Router
                 $view = 'signin';  // Affichage du formulaire de connexion
                 break;
 
+            case 'contact':
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    // Traitement des données du formulaire de contact
+                    $this->authController->contact();
+                }
+                $view = 'contact';  // Affichage du formulaire de contact
+                break;
+
             case 'home':
                 $view = 'home';
                 break;
@@ -51,4 +59,3 @@ class Router
 
 $router = new Router();
 $router->handleRequest();
-?>

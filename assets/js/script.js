@@ -26,8 +26,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// Fonction pour fermer un formulaire avec une croix
-function closeForm(formId) {
-    document.getElementById(formId).style.display = "none";
-}
+
 
