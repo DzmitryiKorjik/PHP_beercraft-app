@@ -31,29 +31,40 @@ class BeerController
      */
     public function addBeer($data, $files)
     {
-        // Vérifier si une image a été uploadée
-        if (isset($files['image']) && $files['image']['error'] === 0) {
-            $targetDir = "uploads/"; // Dossier de stockage des images
-            $imageName = time() . '_' . basename($files['image']['name']);
-            $targetFile = $targetDir . $imageName;
+        try {
+            // Gestion de l'image
+            if (isset($files['image']) && $files['image']['error'] === 0) {
+                // Vérification du type et de la taille
+                $this->isValidImage($files['image']);
 
-            // Déplacer l'image vers le dossier défini
-            if (move_uploaded_file($files['image']['tmp_name'], $targetFile)) {
-                $data['image'] = $targetFile; // Enregistrer le chemin de l'image dans la base de données
+                $uploadDir = 'uploads/';
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
+                $extension = pathinfo($files['image']['name'], PATHINFO_EXTENSION);
+                $imageName = time() . '_' . uniqid() . '.' . $extension;
+                $targetFile = $uploadDir . $imageName;
+
+                if (!move_uploaded_file($files['image']['tmp_name'], $targetFile)) {
+                    throw new Exception("Erreur lors du téléchargement de l'image.");
+                }
+
+                $data['image'] = $targetFile;
             } else {
-                echo "Erreur lors du téléchargement de l'image.";
-                return;
+                $data['image'] = NULL; // Si aucune image n'est fournie
             }
-        } else {
-            $data['image'] = NULL; // Si aucune image n'est fournie
-        }
 
-        // Appeler la fonction du modèle pour ajouter la bière
-        if ($this->model->addBeer($data)) {
-            header("Location: index.php?action=home");
-            exit;
-        } else {
-            echo "Erreur lors de l'ajout du produit.";
+            // Appeler la fonction du modèle pour ajouter la bière
+            if ($this->model->addBeer($data)) {
+                header("Location: index.php?action=home");
+                exit;
+            } else {
+                echo "Erreur lors de l'ajout du produit.";
+            }
+        } catch (Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
         }
     }
 
@@ -84,47 +95,87 @@ class BeerController
      */
     public function updateBeer($id, $data = [], $files = [])
     {
-        // Récupérer la bière existante par son ID
-        $beer = $this->model->getBeerById($id);
+        try {
+            // Récupérer la bière existante par son ID
+            $beer = $this->model->getBeerById($id);
 
-        if (!$beer) {
-            echo "Bière non trouvée.";
+            if (!$beer) {
+                echo "Bière non trouvée.";
+                return;
+            }
+
+            // Vérifier si de nouvelles données sont fournies
+            if (!empty($data)) {
+                // Gestion de l'image
+                if (isset($files['image']) && $files['image']['error'] === 0) {
+                    // Vérification du type et de la taille
+                    $this->isValidImage($files['image']);
+
+                    $uploadDir = 'uploads/';
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+
+                    $extension = pathinfo($files['image']['name'], PATHINFO_EXTENSION);
+                    $imageName = time() . '_' . uniqid() . '.' . $extension;
+                    $targetFile = $uploadDir . $imageName;
+
+                    if (move_uploaded_file($files['image']['tmp_name'], $targetFile)) {
+                        // Supprime l'ancienne image si elle existe
+                        if (!empty($beer['image']) && file_exists($beer['image'])) {
+                            unlink($beer['image']);
+                        }
+                        $data['image'] = $targetFile;
+                    }
+                } else {
+                    $data['image'] = $beer['image']; // Garde l'ancienne image
+                }
+
+                // Mise à jour des informations de la bière
+                if ($this->model->updateBeer($id, $data)) {
+                    header("Location: index.php?action=home"); // Redirection après mise à jour
+                    exit;
+                } else {
+                    echo "Erreur lors de la mise à jour de la bière.";
+                }
+            }
+
+            // Retourner la vue et les données de la bière sans affichage direct
+            return ['view' => 'updateBeer', 'beer' => $beer];
+        } catch (Exception $e) {
+            echo "Erreur: " . $e->getMessage();
             return;
         }
+    }
 
-        // Vérifier si de nouvelles données sont fournies
-        if (!empty($data)) {
-            // Gestion de l'image
-            if (isset($files['image']) && $files['image']['error'] === 0) {
-                $uploadDir = 'uploads/';
-                if (!file_exists($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
+    private function isValidImage($file) {
+        // Получаем MIME-тип файла
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
 
-                $imageName = time() . '_' . basename($files['image']['name']);
-                $targetFile = $uploadDir . $imageName;
+        // Разрешенные типы файлов
+        $allowedTypes = [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+            'image/bmp',
+            'image/svg+xml'
+        ];
 
-                if (move_uploaded_file($files['image']['tmp_name'], $targetFile)) {
-                    // Supprime l'ancienne image si elle existe
-                    if (!empty($beer['image']) && file_exists($beer['image'])) {
-                        unlink($beer['image']);
-                    }
-                    $data['image'] = $targetFile;
-                }
-            } else {
-                $data['image'] = $beer['image']; // Garde l'ancienne image
-            }
+        // Максимальный размер файла (5MB)
+        $maxSize = 5 * 1024 * 1024;
 
-            // Mise à jour des informations de la bière
-            if ($this->model->updateBeer($id, $data)) {
-                header("Location: index.php?action=home"); // Redirection après mise à jour
-                exit;
-            } else {
-                echo "Erreur lors de la mise à jour de la bière.";
-            }
+        if (!in_array($mimeType, $allowedTypes)) {
+            throw new Exception("Type de fichier non autorisé. Types acceptés: JPG, PNG, GIF, WEBP, BMP, SVG");
         }
 
-        // Retourner la vue et les données de la bière sans affichage direct
-        return ['view' => 'updateBeer', 'beer' => $beer];
+        if ($file['size'] > $maxSize) {
+            throw new Exception("Fichier trop volumineux. Maximum 5MB.");
+        }
+
+        return true;
     }
 }
