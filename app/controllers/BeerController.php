@@ -31,12 +31,6 @@ class BeerController
      */
     public function addBeer($data, $files)
     {
-        // Vérifier si tous les champs obligatoires sont remplis
-        if (empty($data['title']) || empty($data['origin']) || empty($data['alcohol']) || empty($data['description']) || empty($data['average_price'])) {
-            echo "Veuillez remplir tous les champs obligatoires.";
-            return;
-        }
-
         // Vérifier si une image a été uploadée
         if (isset($files['image']) && $files['image']['error'] === 0) {
             $targetDir = "uploads/"; // Dossier de stockage des images
@@ -54,16 +48,9 @@ class BeerController
             $data['image'] = NULL; // Si aucune image n'est fournie
         }
 
-        // Appeler la méthode du modèle pour ajouter une bière
-        if ($this->model->addBeer([
-            ':title' => $data['title'],
-            ':origin' => $data['origin'],
-            ':alcohol' => $data['alcohol'],
-            ':description' => $data['description'],
-            ':image' => $data['image'],
-            ':average_price' => $data['average_price']
-        ])) {
-            header("Location: index.php?action=home"); // Redirection après ajout
+        // Appeler la fonction du modèle pour ajouter la bière
+        if ($this->model->addBeer($data)) {
+            header("Location: index.php?action=home");
             exit;
         } else {
             echo "Erreur lors de l'ajout du produit.";
@@ -107,18 +94,25 @@ class BeerController
 
         // Vérifier si de nouvelles données sont fournies
         if (!empty($data)) {
-            // Gestion de l'image : vérifier si une nouvelle image est uploadée
+            // Gestion de l'image
             if (isset($files['image']) && $files['image']['error'] === 0) {
-                $targetDir = "uploads/";
+                $uploadDir = 'uploads/';
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
                 $imageName = time() . '_' . basename($files['image']['name']);
-                $targetFile = $targetDir . $imageName;
+                $targetFile = $uploadDir . $imageName;
 
                 if (move_uploaded_file($files['image']['tmp_name'], $targetFile)) {
-                    $data['image'] = $targetFile; // Mise à jour du chemin de l'image
+                    // Supprime l'ancienne image si elle existe
+                    if (!empty($beer['image']) && file_exists($beer['image'])) {
+                        unlink($beer['image']);
+                    }
+                    $data['image'] = $targetFile;
                 }
             } else {
-                // Conserver l'ancienne image si aucune nouvelle n'est fournie
-                $data['image'] = isset($data['old_image']) ? $data['old_image'] : null;
+                $data['image'] = $beer['image']; // Garde l'ancienne image
             }
 
             // Mise à jour des informations de la bière

@@ -14,8 +14,14 @@
         <div class="beer-list">
             <?php foreach ($beers as $beer): ?>
                 <div class="beer-item">
-                    <?php if (!empty($beer['image'])): ?>
-                        <img src="<?= htmlspecialchars($beer['image']) ?>" alt="<?= htmlspecialchars($beer['title']) ?>" width="150">
+                    <?php if (!empty($beer['image']) && file_exists($beer['image'])): ?>
+                        <img src="<?= htmlspecialchars(BASE_URL . '/' . $beer['image']) ?>" 
+                             alt="<?= htmlspecialchars($beer['title']) ?>" 
+                             loading="lazy">
+                    <?php else: ?>
+                        <img src="<?= BASE_URL ?>/uploads/default-beer.jpg" 
+                             alt="Image par défaut" 
+                             loading="lazy">
                     <?php endif; ?>
                     <h2><?= htmlspecialchars($beer['title']) ?></h2>
                     <p><strong>Origine :</strong> <?= htmlspecialchars($beer['origin']) ?></p>

@@ -59,15 +59,17 @@ class Beer
      */
     public function addBeer($data)
     {
-        if (count($data) !== 6) {
-            throw new Exception("Nombre de paramètres invalide pour addBeer.");
-        }
-
-        $stmt = $this->db->prepare("INSERT INTO beer (title, origin, alcohol, description, image, average_price) 
-        VALUES (:title, :origin, :alcohol, :description, :image, :average_price)");
-
-        return $stmt->execute($data);
+        $stmt = $this->db->prepare("INSERT INTO beer (title, origin, alcohol, description, image, average_price) VALUES (?, ?, ?, ?, ?, ?)");
+        return $stmt->execute([
+            $data['title'], 
+            $data['origin'], 
+            $data['alcohol'], 
+            $data['description'], 
+            $data['image'], 
+            $data['average_price']
+        ]);
     }
+    
 
     /**
      * Met à jour les informations d'une bière
