@@ -1,4 +1,4 @@
-<section>
+<div class="container contact-form">
     <h2>Contact</h2>
     <?php if (!empty($errors)): ?>
         <div class="error">

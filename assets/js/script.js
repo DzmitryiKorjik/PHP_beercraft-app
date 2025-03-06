@@ -1,28 +1,53 @@
-// Gestion de l'affichage des formulaires de connexion et d'inscription
-
 document.addEventListener("DOMContentLoaded", function () {
-    const signinForm = document.getElementById("signin-form");
-    const signupForm = document.getElementById("signup-form");
-    const connBtn = document.getElementById("conn");
-    const registerBtn = document.getElementById("register");
+    // Burger menu functionality
+    const burgerMenu = document.querySelector('.burger-menu');
+    const mainNav = document.querySelector('.main-nav');
+    const header = document.querySelector('.header');
 
-    // Ouvrir le formulaire de connexion
-    connBtn.addEventListener("click", function (event) {
-        event.preventDefault();
-        signinForm.style.display = "block";
-        signupForm.style.display = "none";
-    });
+    function toggleMenu() {
+        mainNav.classList.toggle('active');
+        burgerMenu.classList.toggle('active');
+        header.classList.toggle('nav-open');
+    }
 
-    registerBtn.addEventListener("click", function (event) {
-        event.preventDefault();
-        signupForm.style.display = "block";
-        signinForm.style.display = "none";
-    });
+    // Click events
+    if (burgerMenu && mainNav) {
+        // Mouse click
+        burgerMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMenu();
+        });
 
-    // Fermer un formulaire en cliquant en dehors de celui-ci
-    window.addEventListener("click", function (event) {
-        if (event.target === signinForm) signinForm.style.display = "none";
-        if (event.target === signupForm) signupForm.style.display = "none";
+        // Touch events
+        burgerMenu.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMenu();
+        }, { passive: false });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (mainNav.classList.contains('active') && !mainNav.contains(e.target)) {
+                toggleMenu();
+            }
+        });
+
+        // Close menu when touching outside
+        document.addEventListener('touchstart', function(e) {
+            if (mainNav.classList.contains('active') && !mainNav.contains(e.target) && !burgerMenu.contains(e.target)) {
+                toggleMenu();
+            }
+        }, { passive: true });
+    }
+
+    // Confirmation for delete action
+    const deleteLinks = document.querySelectorAll('a[href*="action=deleteBeer"]');
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette bière ?')) {
+                e.preventDefault();
+            }
+        });
     });
 });
 
