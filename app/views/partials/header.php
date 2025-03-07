@@ -22,8 +22,9 @@
             </ul>
         </nav>
         <div class="search-bar">
-            <form action="search.php" method="get">
-                <input type="text" name="q" placeholder="Rechercher...">
+            <form action="<?= BASE_URL ?>" method="get">
+                <input type="hidden" name="action" value="search">
+                <input type="text" name="query" placeholder="Rechercher une bière..." required>
                 <button type="submit">Rechercher</button>
             </form>
         </div>

@@ -127,4 +127,28 @@ class Beer
         $stmt = $this->db->prepare("DELETE FROM beer WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+    /**
+     * Recherche des bières par titre
+     * @param string $query Terme de recherche
+     * @return array Résultats de la recherche
+     */
+    public function searchBeers($query)
+    {
+        $query = "%{$query}%";
+        $stmt = $this->db->prepare("SELECT
+                                    `id`, 
+                                    `title`, 
+                                    `origin`, 
+                                    `alcohol`, 
+                                    `description`, 
+                                    `image`, 
+                                    `average_price`
+                                FROM beer 
+                                WHERE title LIKE :query 
+                                ORDER BY created_at DESC");
+        $stmt->bindParam(':query', $query, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

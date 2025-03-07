@@ -148,6 +148,17 @@ class BeerController
         }
     }
 
+    /**
+     * Recherche des bières
+     * @param string $query Terme de recherche
+     */
+    public function search($query)
+    {
+        $beers = $this->model->searchBeers($query);
+        $view = 'home';
+        require_once __DIR__ . "/../views/layout.php";
+    }
+
     private function isValidImage($file) {
         // Получаем MIME-тип файла
         $finfo = finfo_open(FILEINFO_MIME_TYPE);

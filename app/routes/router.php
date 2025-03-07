@@ -95,6 +95,11 @@ class Router
                 exit; // Arrêt de l'exécution après la déconnexion
                 break;
 
+            case 'search':
+                $query = $_GET['query'] ?? '';
+                $this->beerController->search($query);
+                break;
+
             default:
                 $view = '404'; // Affichage de la page 404 en cas d'action inconnue
         }
