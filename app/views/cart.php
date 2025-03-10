@@ -51,7 +51,9 @@
             <!-- Résumé du panier et actions -->
             <div class="cart-total">
                 <h2>Total: <?= number_format($total, 2) ?> €</h2>
-                <button class="checkout-button">Procéder au paiement</button>
+                <form action="<?= BASE_URL ?>?action=placeOrder" method="POST">
+                    <button type="submit" class="checkout-button">Procéder au paiement</button>
+                </form>
             </div>
         <?php endif; ?>
     </div>

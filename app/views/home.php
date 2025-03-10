@@ -34,9 +34,10 @@
 
                     <?php if (!empty($_SESSION['users']) && $_SESSION['users']['role'] === 'user'): ?>
                         <ul>
-                            <!-- ajouter au panier -->
                             <li>
-                                <a class="link-opacity-50-hover" href="<?= BASE_URL?>?action=buyBeer&id=<?= $beer['id']?>">Ajouter au panier</a>
+                                <a class="link-opacity-50-hover" href="<?= BASE_URL?>?action=buyBeer&id=<?= $beer['id']?>">
+                                    Ajouter au panier
+                                </a>
                             </li>
                         </ul>
                     <?php endif; ?>

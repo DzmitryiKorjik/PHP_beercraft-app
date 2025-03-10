@@ -69,7 +69,7 @@ class Router
                     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $this->beerController->addBeer($_POST, $_FILES);
                     }
-                    $view = 'addBeer';  // Отображение формы добавления
+                    $view = 'addBeer';  // Afficher le formulaire d'ajout
                     break;
 
                 case 'updateBeer':
@@ -120,11 +120,11 @@ class Router
                     if ($id) {
                         $this->buyBeerController->buyBeer($id);
                     } else {
-                        // Affichage du panier
+                        // Nous obtenons les données du panier et les transmettons à la vue
                         $cartData = $this->buyBeerController->buyBeer();
                         $cartItems = $cartData['cartItems'];
                         $total = $cartData['total'];
-                        $view = 'cart';
+                        $view = 'cart'; // Changer pour 'cart'
                     }
                     break;
 
@@ -141,6 +141,12 @@ class Router
                     $this->buyBeerController->updateQuantity();
                     header('Location: ' . BASE_URL . '?action=buyBeer');
                     exit;
+                    break;
+
+                case 'placeOrder':
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $this->buyBeerController->placeOrder();
+                    }
                     break;
 
                 default:

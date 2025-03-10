@@ -74,5 +74,22 @@ class BuyBeerController {
         header('Location: ' . BASE_URL . '?action=buyBeer');
         exit;
     }
+
+    /**
+     * Traitement du paiement
+     */
+    public function placeOrder() {
+        if (!isset($_SESSION['users'])) {
+            header('Location: ' . BASE_URL . '?action=signin');
+            exit;
+        }
+
+        $userId = $_SESSION['users']['id'];
+        $result = $this->model->placeOrder($userId);
+        
+        // Après une commande réussie, nous sommes redirigés vers la page de confirmation
+        header('Location: ' . BASE_URL . '?action=orderConfirmation');
+        exit;
+    }
 }
 ?>
