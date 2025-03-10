@@ -32,6 +32,15 @@
                     <p><?= nl2br(htmlspecialchars($beer['description'])) ?></p>
                     <p><strong>Prix moyen :</strong> <?= htmlspecialchars($beer['average_price']) ?> €</p>
 
+                    <?php if (!empty($_SESSION['users']) && $_SESSION['users']['role'] === 'user'): ?>
+                        <ul>
+                            <!-- ajouter au panier -->
+                            <li>
+                                <a class="link-opacity-50-hover" href="<?= BASE_URL?>?action=buyBeer&id=<?= $beer['id']?>">Ajouter au panier</a>
+                            </li>
+                        </ul>
+                    <?php endif; ?>
+
                     <?php if (!empty($_SESSION['users']) && $_SESSION['users']['role'] === 'admin'): ?>
                         <ul>
                             <!-- modifier -->

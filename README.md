@@ -1,58 +1,78 @@
 # Beercraft
 
-Beercraft is a web application for managing and exploring different types of beers. Users can view, add, and manage beer information in a user-friendly interface.
+Beercraft is an e-commerce web application specialized in craft beer sales. It allows users to browse, order, and manage their beer purchases.
+
+## Features
+
+### For Users
+- Browse beer catalog
+- Search for specific beers
+- Create account and login
+- Shopping cart management
+- Update cart quantities
+- Place orders
+- View order history
+
+### For Administrators
+- Manage beer catalog
+- Add new beers
+- Edit existing beers
+- Delete beers
+- User management
+- Order management
 
 ## Project Structure
 ```
 Beercraft/
 ├── app/
-│   ├── controllers/                  # Application controllers
-│   │   ├── AuthController.php        # Handles authentication and user management
-│   │   └── BeerController.php        # Manages beer CRUD operations
+│   ├── controllers/               
+│   │   ├── AuthController.php       
+|   |   ├── BuyBeerController.php    
+│   │   └── BeerController.php       
 │   │
-│   ├── models/                       # Data models
-│   │   ├── Beer.php                 # Beer entity and database operations 
-│   │   └── User.php                 # User entity and authentication
+│   ├── models/ 
+|   |   ├── Database.php                       
+│   │   ├── Beer.php                 
+│   │   ├── User.php                 
+|   |   └── BuyBeer.php              
 │   │
-│   ├── views/                        # Template files
-│   │   ├── layouts/                 # Reusable layout templates
-│   │   │   └── layout.php           # Main site layout
-│   │   ├── auth/                    # Authentication related views
-│   │   │   ├── login.php           # Login form
-│   │   │   └── register.php        # Registration form
-│   │   ├── beers/                   # Beer related views
-│   │   │   ├── index.php           # Beer listing page
-│   │   │   ├── show.php            # Single beer details
-│   │   │   ├── create.php          # Add new beer form
-│   │   │   └── edit.php            # Edit beer form
-│   │   └── home.php                # Homepage view
+│   ├── views/                      
+│   │   ├── partials/   
+│   │   |   ├── head.php     
+│   │   |   ├── header.php 
+│   │   │   └── footer.php     
+│   │   ├── 404.php                        
+│   │   ├── addBeer.php           
+│   │   ├── cert.php        
+│   │   ├── contact.php                  
+│   │   ├── home.php           
+│   │   ├── layout.php        
+│   │   ├── signin.php       
+│   │   └── signup.php        
+│   │   ├── updateBeer.php.php                
 │   │
-│   └── config/                       # Configuration files
-│       ├── database.php             # Database configuration
-│       └── app.php                  # Application settings
+│   └── routes/                           
+│       └── router.php              
 │
-├── assets/                           # Static resources
-│   ├── css/                         # Stylesheets
-│   ├── js/                          # JavaScript files
-│   └── images/                      # Static images
+├── assets/                       
+│   ├── css/                  
+│   ├── js/                      
+│   └── icons/                 
 │
-├── uploads/                          # User uploaded files
-│   └── beers/                       # Beer images
+├── uploads/                        
+│   └── beers/                     
 │
-├── public/                           # Public directory
-│   └── index.php                    # Application entry point
+├── config/                          
+│   └── config.php               
 │
-├── vendor/                           # Composer dependencies
-├── .htaccess                        # Apache configuration
-├── composer.json                    # Composer package file
-└── README.md                        # Project documentation
+├── .gitignore
+├── .env
+├── index.php
+├── vendor/                       
+├── .htaccess                  
+├── composer.json               
+└── README.md                      
 ```
-
-## Features
-- Beer catalog browsing
-- Add new beers with details and images
-- User authentication system
-- Responsive design
 
 ## Technical Requirements
 - PHP 7.4 or higher
@@ -67,6 +87,12 @@ Beercraft/
 4. Copy and configure environment variables
 5. Run the application
 
+## Author
+
+-   Name : MARDOVITCH Dzmitryi
+-   Formation : Web and Mobile Web Development.
+-   Objective : Validation of skills in creating and deploying web applications.
+
 ## Usage
 Access the application through your web browser and use the navigation to:
 - Browse the beer catalog
@@ -76,5 +102,5 @@ Access the application through your web browser and use the navigation to:
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
+
 

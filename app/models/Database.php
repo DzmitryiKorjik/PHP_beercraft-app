@@ -5,6 +5,11 @@ require_once __DIR__ . '/../../config/config.php'; // Inclure les configurations
 class Database
 {
     private static ?PDO $pdo = null;
+    private $connection;
+
+    public function __construct() {
+        $this->connection = self::connect();
+    }
 
     public static function connect(): PDO
     {
@@ -52,5 +57,19 @@ class Database
     public static function disconnect(): void
     {
         self::$pdo = null;
+    }
+
+    public function query($sql, $params = []) {
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch(PDOException $e) {
+            throw new Exception("Database query error: " . $e->getMessage());
+        }
+    }
+
+    public function lastInsertId() {
+        return $this->connection->lastInsertId();
     }
 }

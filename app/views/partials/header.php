@@ -27,6 +27,8 @@
                 <input type="text" name="query" placeholder="Rechercher une bière..." required>
                 <button type="submit">Rechercher</button>
             </form>
+            <a href="<?= BASE_URL ?>?action=buyBeer"><img src="<?= BASE_URL ?>assets/icons/buy-icon.svg" alt="Panier" class="buy-icon"></a>
+            
         </div>
     </div>
 </header>
