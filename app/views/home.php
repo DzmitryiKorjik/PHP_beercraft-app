@@ -46,11 +46,11 @@ $username = isset($_SESSION['users']['username']) ? $_SESSION['users']['username
                     <?php if (!empty($_SESSION['users']) && $_SESSION['users']['role'] === 'admin'): ?>
                         <ul>
                             <!-- modifier -->
-                            <li><a class="link-opacity-50-hover" href="<?= BASE_URL ?>?action=updateBeer&id=<?= $beer['id'] ?>">Modifier</a></li>
+                            <li><a class="link-opacity-50-hover btn-modifier" href="<?= BASE_URL ?>?action=updateBeer&id=<?= $beer['id'] ?>">Modifier</a></li>
 
                             <!-- delete -->
                             <li>
-                                <a class="link-opacity-50-hover"
+                                <a class="link-opacity-50-hover btn-delete"
                                     href="<?= BASE_URL ?>?action=deleteBeer&id=<?= $beer['id'] ?>"
                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette bière ?')">Supprimer</a>
                             </li>

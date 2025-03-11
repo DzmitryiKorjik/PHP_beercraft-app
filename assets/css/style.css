@@ -134,6 +134,7 @@ main {
     position: relative;
     transition: transform 0.3s ease;
     box-shadow: 8px 8px 0 #202020;
+    padding-bottom: 50px;
 }
 
 .beer-item:hover {
@@ -524,6 +525,11 @@ input[type="submit"]:hover,
     border-color: #333;
 }
 
+.beer-item > ul{
+    position: absolute;
+    bottom: 5px;
+}
+
 .btn:active,
 button:active,
 input[type="submit"]:active {
@@ -771,6 +777,16 @@ input[type="submit"]:active {
 
 .cart-item-details {
     flex: 1;
+}
+
+.item-total > a {
+    text-decoration: none;
+    color: #ff0000;
+    transition: color 0.3s ease;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
 }
 
 .cart-total {

@@ -36,13 +36,13 @@
                                 <input type="number" name="quantity" value="<?= $item['quantity'] ?>" min="1" max="99">
                                 <button type="submit">Mettre à jour</button>
                             </form>
-                            <a href="<?= BASE_URL ?>?action=removeFromCart&id=<?= $item['id'] ?>" 
-                               class="remove-item">Supprimer</a>
                         </div>
 
                         <!-- Total pour cet article -->
                         <div class="item-total">
                             <?= $item['average_price'] * $item['quantity'] ?> €
+                            <a href="<?= BASE_URL ?>?action=removeFromCart&id=<?= $item['id'] ?>" 
+                            class="remove-item">Supprimer</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
