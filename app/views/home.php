@@ -4,11 +4,12 @@
  * Page d'accueil
  * Affiche la liste des bières disponibles
  */
+$username = isset($_SESSION['users']['username']) ? $_SESSION['users']['username'] : 'Visiteur';
 ?>
 <section class="container">
     <!-- Titre de la page -->
     <div class="titre">
-        <h1>Bienvenue sur Beercraft 🍺</h1>
+        <h1><?= $username ?>, Bienvenue sur Beercraft 🍺</h1>
         <p>Découvrez nos meilleures bières artisanales.</p>
     </div>
 

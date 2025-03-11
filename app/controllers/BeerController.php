@@ -7,6 +7,7 @@ require_once 'app/models/Beer.php';
 class BeerController
 {
     private $model;
+    private $username;
 
     public function __construct()
     {
@@ -20,6 +21,9 @@ class BeerController
      */
     public function index($view = 'home')
     {
+        // Récupérer le nom d'utilisateur depuis la session
+        $this->username = isset($_SESSION['users']['username']) ? $_SESSION['users']['username'] : 'Visiteur';
+
         $beers = $this->model->getAllBeers();
         require_once __DIR__ . "/../views/layout.php";
     }
