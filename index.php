@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 $_SESSION['test'] = 'Session OK';
 
 ini_set('display_errors', 1);
