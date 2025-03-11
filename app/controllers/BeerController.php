@@ -31,6 +31,8 @@ class BeerController
      */
     public function addBeer($data, $files)
     {
+        $errors = [];
+
         try {
             // Gestion de l'image
             if (isset($files['image']) && $files['image']['error'] === 0) {
@@ -47,7 +49,7 @@ class BeerController
                 $targetFile = $uploadDir . $imageName;
 
                 if (!move_uploaded_file($files['image']['tmp_name'], $targetFile)) {
-                    throw new Exception("Erreur lors du téléchargement de l'image.");
+                    $errors[] = "Erreur lors du téléchargement de l'image.";
                 }
 
                 $data['image'] = $targetFile;
@@ -60,11 +62,14 @@ class BeerController
                 header("Location: index.php?action=home");
                 exit;
             } else {
-                echo "Erreur lors de l'ajout du produit.";
+                $errors[] = "Erreur lors de l'ajout du produit.";
+            }
+
+            if (!empty($errors)) {
+                $this->handleError($errors);
             }
         } catch (Exception $e) {
-            echo "Erreur: " . $e->getMessage();
-            return;
+            $this->handleError(["Erreur: " . $e->getMessage()]);
         }
     }
 
@@ -74,15 +79,16 @@ class BeerController
      */
     public function deleteBeer($id)
     {
+        $errors = [];
         try {
             if ($this->model->deleteBeer($id)) {
                 header("Location: index.php?action=home"); // Redirection après suppression
                 exit;
             } else {
-                echo "Erreur lors de la suppression de la bière.";
+                $this->handleError(["Erreur lors de la suppression de la bière."]);
             }
         } catch (Exception $e) {
-            echo "Erreur lors de la suppression : " . $e->getMessage();
+            $this->handleError(["Erreur: " . $e->getMessage()]);
         }
     }
 
@@ -95,12 +101,14 @@ class BeerController
      */
     public function updateBeer($id, $data = [], $files = [])
     {
+        $errors = [];
+
         try {
             // Récupérer la bière existante par son ID
             $beer = $this->model->getBeerById($id);
 
             if (!$beer) {
-                echo "Bière non trouvée.";
+                $errors[] = "Bière non trouvée.";
                 return;
             }
 
@@ -136,15 +144,18 @@ class BeerController
                     header("Location: index.php?action=home"); // Redirection après mise à jour
                     exit;
                 } else {
-                    echo "Erreur lors de la mise à jour de la bière.";
+                    $errors[] = "Erreur lors de la mise à jour de la bière.";
                 }
+            }
+
+            if (!empty($errors)) {
+                $this->handleError($errors);
             }
 
             // Retourner la vue et les données de la bière sans affichage direct
             return ['view' => 'updateBeer', 'beer' => $beer];
         } catch (Exception $e) {
-            echo "Erreur: " . $e->getMessage();
-            return;
+            $this->handleError(["Erreur: " . $e->getMessage()]);
         }
     }
 
@@ -160,12 +171,12 @@ class BeerController
     }
 
     private function isValidImage($file) {
-        // Получаем MIME-тип файла
+        // Obtenir le type MIME du fichier
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
 
-        // Разрешенные типы файлов
+        // Types de fichiers autorisés
         $allowedTypes = [
             'image/jpeg',
             'image/jpg',
@@ -176,7 +187,7 @@ class BeerController
             'image/svg+xml'
         ];
 
-        // Максимальный размер файла (5MB)
+        // Taille maximale du fichier (5MB)
         $maxSize = 5 * 1024 * 1024;
 
         if (!in_array($mimeType, $allowedTypes)) {
@@ -188,5 +199,11 @@ class BeerController
         }
 
         return true;
+    }
+
+    private function handleError($errors) {
+        $_SESSION['errors'] = $errors;
+        header('Location: ' . BASE_URL . '?action=error');
+        exit;
     }
 }

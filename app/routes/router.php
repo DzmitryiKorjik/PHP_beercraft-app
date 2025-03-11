@@ -1,4 +1,5 @@
 <?php
+
 /** 
  * Routeur principal de l'application
  * Gère toutes les routes et leurs actions associées
@@ -34,11 +35,9 @@ class Router
      */
     public function handleRequest()
     {
-        // Action par défaut : page d'accueil
-        $action = $_GET['action'] ?? 'home';
-        $view = 'home';
-
         try {
+            $action = $_GET['action'] ?? 'home';
+
             switch ($action) {
                 // Gestion de l'inscription
                 case 'signup':
@@ -56,14 +55,25 @@ class Router
                     }
                     $view = 'signin'; // Affichage du formulaire de connexion
                     break;
+                    
+                case 'error':
+                    $this->authController->error();
+                    return;
 
                 case 'contact':
+                    $success = $_SESSION['success'] ?? null;
+                    $errors = [];
                     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                        // Traitement du formulaire de contact
                         $this->authController->contact();
                     }
-                    $view = 'contact'; // Affichage du formulaire de contact
-                    break;
+                    $viewData = [
+                        'view' => 'contact',
+                        'success' => $success,
+                        'errors' => $errors
+                    ];
+                    extract($viewData);
+                    require_once 'app/views/layout.php';
+                    return;
 
                 case 'addBeer':
                     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -112,7 +122,7 @@ class Router
                     $query = $_GET['query'] ?? '';
                     $this->beerController->search($query);
                     break;
-                
+
                 // Gestion du panier
                 case 'buyBeer':
                     $id = $_GET['id'] ?? null;
@@ -148,25 +158,24 @@ class Router
                         $this->buyBeerController->placeOrder();
                     }
                     break;
-
                 default:
-                    $view = '404'; // Affichage de la page 404 en cas d'action inconnue
+                    require_once 'app/views/404.php';
+                    return;
             }
 
-            // Préparation des données pour la vue
+            // Only for successful cases
             $viewData = [
                 'view' => $view,
                 'cartItems' => $cartItems ?? [],
                 'total' => $total ?? 0
             ];
             extract($viewData);
+            require_once 'app/views/layout.php';
 
-            // Chargement du template principal
-            require_once 'app/views/layout.php';
         } catch (Exception $e) {
-            // Gestion des erreurs : affichage de la page 404
-            $view = '404';
-            require_once 'app/views/layout.php';
+            $_SESSION['errors'] = ['Une erreur inattendue s\'est produite: ' . $e->getMessage()];
+            header('Location: ' . BASE_URL . '?action=error');
+            exit;
         }
     }
 }

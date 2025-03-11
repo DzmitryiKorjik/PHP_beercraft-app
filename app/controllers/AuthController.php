@@ -1,95 +1,115 @@
 <?php
 require_once 'app/models/User.php';
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 class AuthController
 {
     private $userModel;
 
     public function __construct()
     {
+        // Initialisation du modèle utilisateur
         $this->userModel = new User();
     }
 
+    // Méthode pour l'inscription des utilisateurs
     public function signup()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Réception des données du formulaire
+            // Récupération des données du formulaire
             $username = $_POST['username'];
             $email = $_POST['email'];
             $password = $_POST['password'];
             $confirm_password = $_POST['confirm_password'];
+            $errors = [];
 
-            // Validation des données (des contrôles supplémentaires peuvent être ajoutés)
+            // Validation des données saisies
             if (empty($username) || empty($email) || empty($password)) {
-                echo "Tous les champs sont requis.";
-                return;
+                $errors[] = "Tous les champs sont requis.";
             }
 
-            // Validation du format de l'adresse email
+            // Vérification de la validité de l'email
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                echo "L'adresse email n'est pas valide.";
-                return;
+                $errors[] = "L'adresse email n'est pas valide.";
             }
 
-            // Validation du mot de passe (des contrôles supplémentaires peuvent être ajoutés)
+            // Vérification de la longueur du mot de passe
             if (strlen($password) < 8) {
-                echo "Le mot de passe doit contenir au moins 8 caractères.";
-                return;
+                $errors[] = "Le mot de passe doit contenir au moins 8 caractères.";
             }
 
-            // Validation du format du mot de passe (des contrôles supplémentaires peuvent être ajoutés)
+            // Vérification de la complexité du mot de passe
             if (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password)) {
-                echo "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule et un chiffre.";
-                return;
+                $errors[] = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule et un chiffre.";
             }
 
-            // Validation de la correspondance des mots de passe
-            if ($password!== $confirm_password) {
-                echo "Les mots de passe ne correspondent pas.";
-                return;
+            // Vérification de la confirmation du mot de passe
+            if ($password !== $confirm_password) {
+                $errors[] = "Les mots de passe ne correspondent pas.";
             }
 
-            // Hachez le mot de passe avant de l'enregistrer
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-            // Créer un utilisateur dans la base de données
-            if ($this->userModel->createUser($username, $email, $hashedPassword)) {
-                header('Location: ' . BASE_URL . '?action=signin');
-                exit;
-            } else {
-                echo "Erreur lors de l'inscription.";
+            // Si aucune erreur, hachage du mot de passe et enregistrement de l'utilisateur
+            if (empty($errors)) {
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                if ($this->userModel->createUser($username, $email, $hashedPassword)) {
+                    header('Location: ' . BASE_URL . '?action=signin');
+                    exit;
+                } else {
+                    $errors[] = "Erreur lors de l'inscription.";
+                }
             }
+
+            // Redirection vers la page d'erreur en cas d'échec
+            $_SESSION['errors'] = $errors;
+            header('Location: ' . BASE_URL . '?action=error');
+            exit;
         }
-        $this->render('signup');
     }
 
+    // Méthode pour la connexion des utilisateurs
     public function signin()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Réception des données du formulaire
             $username = $_POST['username'];
             $password = $_POST['password'];
+            $errors = [];
 
-            // Validation des données
+            // Vérification si tous les champs sont remplis
             if (empty($username) || empty($password)) {
-                echo "Tous les champs sont requis.";
-                return;
+                $errors[] = "Tous les champs sont requis.";
             }
 
-            // Vérifier si l'utilisateur existe
-            $user = $this->userModel->getUserByUsername($username);
-            if ($user && password_verify($password, $user['password'])) {
-                $_SESSION['users'] = $user;
-                header('Location: ' . BASE_URL);
-                exit;
-            } else {
-                echo "Username ou mot de passe incorrect.";
-                return;
+            // Vérification des informations d'identification
+            if (empty($errors)) {
+                $user = $this->userModel->getUserByUsername($username);
+                if ($user && password_verify($password, $user['password'])) {
+                    $_SESSION['users'] = $user;
+                    header('Location: ' . BASE_URL);
+                    exit;
+                } else {
+                    $errors[] = "Nom d'utilisateur ou mot de passe incorrect.";
+                }
             }
+
+            // Redirection vers la page d'erreur en cas d'échec
+            $_SESSION['errors'] = $errors;
+            header('Location: ' . BASE_URL . '?action=error');
+            exit;
         }
-        $this->render('signin');
     }
 
+    // Méthode pour afficher les erreurs
+    public function error()
+    {
+        $errors = $_SESSION['errors'] ?? [];
+        unset($_SESSION['errors']); // Nettoyage des erreurs après affichage
+        require "app/views/error.php";
+        exit; // Empêcher tout rendu supplémentaire
+    }
+
+    // Méthode pour la déconnexion des utilisateurs
     public function signout()
     {
         session_destroy();
@@ -97,43 +117,104 @@ class AuthController
         exit;
     }
 
+    // Méthode pour la gestion du formulaire de contact
     public function contact()
     {
+        $errors = [];
+        $success = '';
+
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $name = trim($_POST["name"]);
-            $email = trim($_POST["email"]);
-            $message = trim($_POST["message"]);
-            $errors = [];
-        
-            // Validation des données
+            // Nettoyage des données d'entrée
+            $name = filter_var(trim($_POST["name"]));
+            $email = filter_var(trim($_POST["email"]), FILTER_SANITIZE_EMAIL);
+            $message = filter_var(trim($_POST["message"]));
+
+            // Validation des données du formulaire
             if (empty($name) || empty($email) || empty($message)) {
-                $errors[] = "Tous les champs sont obligatoires."; // Все поля обязательны
+                $errors[] = "Tous les champs sont obligatoires.";
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors[] = "L'email est invalide."; // Некорректный email
+                $errors[] = "L'email est invalide.";
+            } elseif (strlen($message) < 10) {
+                $errors[] = "Le message doit contenir au moins 10 caractères.";
+            } elseif (strlen($message) > 1000) {
+                $errors[] = "Le message ne doit pas dépasser 1000 caractères.";
             }
-        
+
+            // Si aucune erreur, envoi de l'email via PHPMailer
             if (empty($errors)) {
-                // Envoi de l'email (ou sauvegarde dans la base de données)
-                $to = "admin@example.com"; // Remplace par ton adresse e-mail
-                $subject = "Nouveau message du site web"; // Новое сообщение с сайта
-                $body = "Nom: $name\nEmail: $email\nMessage:\n$message";
-                $headers = "From: $email";
-        
-                if (mail($to, $subject, $body, $headers)) {
-                    $success = "Message envoyé avec succès !"; // Сообщение отправлено!
-                } else {
-                    $errors[] = "Erreur lors de l'envoi du message."; // Ошибка при отправке
+                require 'vendor/autoload.php';
+
+                // Vérification des variables d'environnement pour l'email
+                if (!isset($_ENV['EMAIL_USER']) || !isset($_ENV['EMAIL_PASS'])) {
+                    throw new Exception("Configuration email manquante");
+                }
+
+                $mail = new PHPMailer(true);
+                try {
+                    // Configuration du serveur SMTP
+                    $mail->SMTPDebug = 0; // Désactiver le mode debug en production
+                    $mail->isSMTP();
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = $_ENV['EMAIL_USER'];
+                    $mail->Password = $_ENV['EMAIL_PASS'];
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Sécurisation SMTPS
+                    $mail->Port = 465; // Port utilisé pour SMTPS
+
+                    // Configuration de l'expéditeur et du destinataire
+                    $mail->setFrom($_ENV['EMAIL_USER'], $name);
+                    $mail->addReplyTo($email, $name);
+                    $mail->addAddress('dzmitryimardovitch@gmail.com');
+
+                    // Configuration du message
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Nouveau message du site web';
+                    $mail->Body    = "Nom: $name<br>Email: $email<br>Message:<br>$message";
+
+                    // Désactivation de la vérification SSL pour les certificats auto-signés
+                    $mail->SMTPOptions = [
+                        'ssl' => [
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true
+                        ]
+                    ];
+
+                    // Envoi de l'email
+                    if (!$mail->send()) {
+                        throw new Exception($mail->ErrorInfo);
+                    }
+
+                    $success = "Message envoyé avec succès !";
+                } catch (Exception $e) {
+                    error_log("Erreur Email: " . $e->getMessage());
+                    $errors[] = "Impossible d'envoyer le message. Veuillez réessayer plus tard.";
                 }
             }
+
+            // Gestion des erreurs et succès
+            if (!empty($errors)) {
+                $_SESSION['errors'] = $errors;
+                $_SESSION['form_data'] = ['name' => $name, 'email' => $email, 'message' => $message];
+            } else {
+                $_SESSION['success'] = $success;
+            }
+
+            header('Location: ' . BASE_URL . '?action=contact');
+            exit;
         }
-        $this->render('contact', compact('errors', 'success'));        
+
+        // Récupération des données du formulaire en cas d'erreur
+        $form_data = $_SESSION['form_data'] ?? [];
+        unset($_SESSION['form_data']);
+
+        require "app/views/contact.php";
     }
 
-    // Méthode de rendu des vues
+    // Méthode pour le rendu des vues
     private function render($view, $data = [])
     {
         extract($data);
         require "app/views/{$view}.php";
     }
 }
-?>
