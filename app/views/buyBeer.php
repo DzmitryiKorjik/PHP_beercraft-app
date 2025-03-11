@@ -1,6 +1,7 @@
 <section class="container">
     <div class="cart-container">
-        <h1>Votre Panier</h1>
+        
+        <!-- <h1>Votre Panier</h1> -->
         
         <?php if (empty($cartItems)): ?>
             <p>Votre panier est vide</p>
