@@ -6,6 +6,5 @@
             <input type="password" id="password" name="password" placeholder="Mot de passe" required><br>
             <button type="submit">Login</button>
         </form>
-
     </div>
 </div>
