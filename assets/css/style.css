@@ -19,9 +19,6 @@ body {
     min-height: 100%;
     flex: 1;
     padding: 2rem 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .paiement-container {
@@ -134,10 +131,14 @@ main {
 }
 
 .beer-list {
-    display: grid;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+    /* display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    padding-bottom: 2rem;
+    padding-bottom: 2rem; */
 }
 
 .beer-item {
@@ -628,10 +629,6 @@ input[type="submit"]:active {
     .container {
         padding: 1rem;
     }
-
-    .beer-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 @media (max-width: 768px) {
@@ -686,10 +683,6 @@ input[type="submit"]:active {
 
     .search-bar form {
         width: 100%;
-    }
-
-    .beer-list {
-        grid-template-columns: 1fr;
     }
 
     .beer-item {
