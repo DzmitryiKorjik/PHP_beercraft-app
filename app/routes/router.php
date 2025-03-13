@@ -9,6 +9,7 @@
 require_once 'app/controllers/AuthController.php';
 require_once 'app/controllers/BeerController.php';
 require_once 'app/controllers/BuyBeerController.php';
+require_once 'app/controllers/CheckoutController.php'; // Add this line
 
 
 /**
@@ -20,6 +21,7 @@ class Router
     private $authController;
     private $beerController;
     private $buyBeerController;
+    private $checkoutController; // Add this line
 
     public function __construct()
     {
@@ -27,6 +29,7 @@ class Router
         $this->authController = new AuthController();
         $this->beerController = new BeerController();
         $this->buyBeerController = new BuyBeerController();
+        $this->checkoutController = new CheckoutController(); // Add this line
     }
 
     /**
@@ -155,9 +158,28 @@ class Router
 
                 case 'placeOrder':
                     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                        $this->buyBeerController->placeOrder();
+                        // Assuming $cartData is retrieved from the session or another source
+                        $cartData = $this->buyBeerController->buyBeer();
+                        $total = $cartData['total'];
+                        $this->checkoutController->handleCheckout($total);
                     }
                     break;
+
+                case 'checkout':
+                    // Assuming $cartData is retrieved from the session or another source
+                    $cartData = $this->buyBeerController->buyBeer();
+                    $total = $cartData['total'];
+                    $this->checkoutController->handleCheckout($total);
+                    break;
+
+                case 'paymentSuccess':
+                    $view = 'paymentSuccess';
+                    break;
+
+                case 'paymentError':
+                    $view = 'paymentError';
+                    break;
+
                 default:
                     require_once 'app/views/404.php';
                     return;

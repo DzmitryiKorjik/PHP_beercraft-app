@@ -1,106 +1,122 @@
-# Beercraft
+# BEERCRAFT
 
-Beercraft is an e-commerce web application specialized in craft beer sales. It allows users to browse, order, and manage their beer purchases.
+## Description
 
-## Features
+Beercraft is an e-commerce web application specializing in craft beer sales. It allows users to browse, order, and manage their beer purchases seamlessly.
 
-### For Users
-- Browse beer catalog
-- Search for specific beers
-- Create account and login
-- Shopping cart management
-- Update cart quantities
-- Place orders
-- View order history
+## Learning Objectives
 
-### For Administrators
-- Manage beer catalog
-- Add new beers
-- Edit existing beers
-- Delete beers
-- User management
-- Order management
+This project aims to:
+- Strengthen web development skills using PHP.
+- Understand the structure of an e-commerce platform.
+- Implement the MVC architecture for better code organization.
+- Integrate payment processing with Stripe.
+
+## Main Features
+
+- **User Authentication**: Secure login and registration system.
+- **Product Management**: Admins can add, edit, and delete beers.
+- **Shopping Cart**: Users can add beers to their cart and proceed to checkout.
+- **Order Processing**: Manages user orders and order status.
+- **Payment Integration**: Secure payment processing with Stripe API.
 
 ## Project Structure
+
 ```
 Beercraft/
-├── app/
-│   ├── controllers/               
-│   │   ├── AuthController.php       
-|   |   ├── BuyBeerController.php    
-│   │   └── BeerController.php       
-│   │
-│   ├── models/ 
-|   |   ├── Database.php                       
-│   │   ├── Beer.php                 
-│   │   ├── User.php                 
-|   |   └── BuyBeer.php              
-│   │
-│   ├── views/                      
-│   │   ├── partials/   
-│   │   |   ├── head.php     
-│   │   |   ├── header.php 
-│   │   │   └── footer.php     
-│   │   ├── 404.php                        
-│   │   ├── addBeer.php           
-│   │   ├── cert.php        
-│   │   ├── contact.php                  
-│   │   ├── home.php           
-│   │   ├── layout.php        
-│   │   ├── signin.php       
-│   │   └── signup.php        
-│   │   ├── updateBeer.php.php                
-│   │
-│   └── routes/                           
-│       └── router.php              
-│
-├── assets/                       
-│   ├── css/                  
-│   ├── js/                      
-│   └── icons/                 
-│
-├── uploads/                        
-│   └── beers/                     
-│
-├── config/                          
-│   └── config.php               
-│
-├── .gitignore
-├── .env
+├── README.md
+├── app
+│   ├── controllers
+│   │   ├── AuthController.php
+│   │   ├── BeerController.php
+│   │   ├── BuyBeerController.php
+│   │   └── CheckoutController.php
+│   ├── models
+│   │   ├── Beer.php
+│   │   ├── BuyBeer.php
+│   │   ├── Database.php
+│   │   ├── StripeModel.php
+│   │   └── User.php
+│   ├── routes
+│   │   └── router.php
+│   └── views
+│       ├── home.php
+│       ├── cart.php
+│       ├── checkout.php
+│       ├── signin.php
+│       ├── signup.php
+│       ├── orderConfirmation.php
+│       ├── partials/
+│       └── ... (other pages)
+├── assets
+│   ├── css/
+│   ├── js/
+│   ├── img/
+│   └── icons/
+├── config
+│   └── config.php
 ├── index.php
-├── vendor/                       
-├── .htaccess                  
-├── composer.json               
-└── README.md                      
+├── composer.json
+├── robots.txt
+└── uploads/
 ```
 
-## Technical Requirements
-- PHP 7.4 or higher
-- MySQL 5.7 or higher
-- Apache/Nginx web server
-- Docker (optional)
-
 ## Installation
-1. Clone the repository
-2. Configure your web server to point to the project directory
-3. Set up the database
-4. Copy and configure environment variables
-5. Run the application
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/DzmitryiKorjik/PHP_beercraft-app.git
+   ```
+
+2. **Navigate to the project directory:**
+   ```bash
+   cd PHP_beercraft-app
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   composer install
+   ```
+
+4. **Set up the database:**
+   - Create a MySQL database named `beercraft`.
+   - Import the provided SQL file to initialize the tables.
+
+5. **Configure environment settings:**
+   - Rename `config.php.example` to `config.php`.
+   - Update the database credentials and Stripe API keys.
+
+6. **Start the local server:**
+   ```bash
+   php -S localhost:8000
+   ```
+
+7. **Access the application:**
+   Open a browser and go to `http://localhost:8000`.
+
+## Deployment
+
+1. **Choose a hosting provider** that supports PHP and MySQL.
+2. **Upload files** via FTP or SSH.
+3. **Set up a production database** and import the database schema.
+4. **Configure environment settings** in `config.php`.
+5. **Ensure proper file permissions**, especially for `uploads/`.
+6. **Enable SSL (HTTPS)** for secure transactions.
 
 ## Author
 
--   Name : MARDOVITCH Dzmitryi
--   Formation : Web and Mobile Web Development.
--   Objective : Validation of skills in creating and deploying web applications.
+- **Name:** Dzmitryi Mardovitch
+- **Education:** Web and Mobile Development
+- **Objective:** Validation of web application development and deployment skills.
 
-## Usage
-Access the application through your web browser and use the navigation to:
-- Browse the beer catalog
-- Add new beers (requires authentication)
-- Manage existing entries
+## Future Improvements 🚀
 
-## Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
+- **Enhanced UI/UX** for a modern and responsive design.
+- **Admin Dashboard** for managing products and orders.
+- **User Profiles** to track order history and preferences.
+- **Advanced Search** with filtering and sorting options.
+- **Multilingual Support** to expand user accessibility.
+- **Dockerization** for an optimized deployment environment.
 
-
+---
 

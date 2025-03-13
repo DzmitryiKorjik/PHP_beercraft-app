@@ -88,7 +88,7 @@ class BuyBeerController {
         $result = $this->model->placeOrder($userId);
         
         // Après une commande réussie, nous sommes redirigés vers la page de confirmation
-        header('Location: ' . BASE_URL . '?action=orderConfirmation');
+        header('Location: ' . BASE_URL . '?action=checkout');
         exit;
     }
 }
