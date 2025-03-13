@@ -12,6 +12,7 @@
                 <li><a href="<?= BASE_URL ?>?action=contact">Contact</a></li>
                 <?php if (!empty($_SESSION['users']) && $_SESSION['users']['role'] === 'admin'): ?>
                     <li><a href="<?= BASE_URL ?>?action=addBeer">Ajouter un produit</a></li>
+                    <li><a href="<?= BASE_URL ?>?action=order">Commandes</a></li>
                 <?php endif; ?>
                 <?php if (!empty($_SESSION['users'])): ?>
                     <li><a href="<?= BASE_URL ?>?action=signout">Déconnexion</a></li>
@@ -28,7 +29,6 @@
                 <button type="submit">Rechercher</button>
             </form>
             <a href="<?= BASE_URL ?>?action=buyBeer"><img src="<?= BASE_URL ?>assets/icons/buy-icon.svg" alt="Panier" class="buy-icon"></a>
-            
         </div>
     </div>
 </header>

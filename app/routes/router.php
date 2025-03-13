@@ -9,8 +9,8 @@
 require_once 'app/controllers/AuthController.php';
 require_once 'app/controllers/BeerController.php';
 require_once 'app/controllers/BuyBeerController.php';
-require_once 'app/controllers/CheckoutController.php'; // Add this line
-
+require_once 'app/controllers/CheckoutController.php';
+require_once 'app/controllers/OrderController.php';
 
 /**
  * Classe Router
@@ -21,7 +21,8 @@ class Router
     private $authController;
     private $beerController;
     private $buyBeerController;
-    private $checkoutController; // Add this line
+    private $checkoutController;
+    private $orderController;
 
     public function __construct()
     {
@@ -29,7 +30,8 @@ class Router
         $this->authController = new AuthController();
         $this->beerController = new BeerController();
         $this->buyBeerController = new BuyBeerController();
-        $this->checkoutController = new CheckoutController(); // Add this line
+        $this->checkoutController = new CheckoutController();
+        $this->orderController = new OrderController();
     }
 
     /**
@@ -40,6 +42,7 @@ class Router
     {
         try {
             $action = $_GET['action'] ?? 'home';
+            $view = ''; // Initialize $view to avoid undefined variable warning
 
             switch ($action) {
                 // Gestion de l'inscription
@@ -83,6 +86,15 @@ class Router
                         $this->beerController->addBeer($_POST, $_FILES);
                     }
                     $view = 'addBeer';  // Afficher le formulaire d'ajout
+                    break;
+
+                case 'order':
+                    $result = $this->orderController->listOrders();
+                    extract($result);
+                    break;
+
+                case 'deleteOrderItem':
+                    $this->orderController->deleteOrderItem();
                     break;
 
                 case 'updateBeer':
@@ -186,13 +198,15 @@ class Router
             }
 
             // Only for successful cases
-            $viewData = [
-                'view' => $view,
-                'cartItems' => $cartItems ?? [],
-                'total' => $total ?? 0
-            ];
-            extract($viewData);
-            require_once 'app/views/layout.php';
+            if ($view) {
+                $viewData = [
+                    'view' => $view,
+                    'cartItems' => $cartItems ?? [],
+                    'total' => $total ?? 0
+                ];
+                extract($viewData);
+                require_once 'app/views/layout.php';
+            }
 
         } catch (Exception $e) {
             $_SESSION['errors'] = ['Une erreur inattendue s\'est produite: ' . $e->getMessage()];
