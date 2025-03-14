@@ -16,7 +16,7 @@
                         <div class="dropdown-menu">
                             <a href="<?= BASE_URL ?>?action=order">Détails de la commande</a>
                             <a href="<?= BASE_URL ?>?action=users">Utilisateur</a>
-                            <a href="<?= BASE_URL ?>?action=order">Liste de produits</a>
+                            <a href="<?= BASE_URL ?>?action=listItems">Liste de produits</a>
                             <a href="<?= BASE_URL ?>?action=addBeer">Ajouter un produit</a>
                         </div>
                     </li>

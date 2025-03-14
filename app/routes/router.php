@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 /** 
  * Routeur principal de l'application
@@ -64,8 +67,14 @@ class Router
                     break;
                     
                 case 'error':
-                    $this->authController->error();
-                    return;
+                    // Убедитесь, что ошибка обрабатывается только один раз
+                    if (!isset($_SESSION['error_handled'])) {
+                        $_SESSION['error_handled'] = true;
+                        $this->authController->error();
+                    }
+                    $errors = $_SESSION['errors'] ?? [];
+                    $view = 'error';
+                    break;
 
                 case 'contact':
                     $success = $_SESSION['success'] ?? null;
@@ -107,7 +116,7 @@ class Router
                     extract($result);
                     // $view = 'users';         
                     break;
-
+                    
                 case 'updateBeer':
                     // Mise à jour d'une bière existante
                     $id = $_GET['id'] ?? null;
@@ -203,8 +212,13 @@ class Router
                     $view = 'paymentError';
                     break;
 
+                case 'listItems':
+                    $items = $this->beerController->getAllBeers();
+                    $view = 'listItems';
+                    break;
+
                 default:
-                    require_once 'app/views/404.php';
+                    require_once 'app/views/pages/404.php';
                     return;
             }
 
@@ -213,7 +227,8 @@ class Router
                 $viewData = [
                     'view' => $view,
                     'cartItems' => $cartItems ?? [],
-                    'total' => $total ?? 0
+                    'total' => $total ?? 0,
+                    'errors' => $errors ?? []
                 ];
                 extract($viewData);
                 require_once 'app/views/layout.php';

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
 </head>
 <body>
-    <div class="error-container">
+    <div class="error-container" id="unique-error-container">
         <h1>Une erreur s'est produite</h1>
         <?php if (!empty($errors)): ?>
             <ul class="error-list">

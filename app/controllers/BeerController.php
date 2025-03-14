@@ -28,6 +28,10 @@ class BeerController
         require_once __DIR__ . "/../views/layout.php";
     }
 
+    public function getAllBeers() {
+        return $this->model->getAllBeers();
+    }
+
     /**
      * Ajoute une nouvelle bière
      * @param array $data Les données du formulaire
@@ -204,6 +208,8 @@ class BeerController
 
         return true;
     }
+
+
 
     private function handleError($errors) {
         $_SESSION['errors'] = $errors;
