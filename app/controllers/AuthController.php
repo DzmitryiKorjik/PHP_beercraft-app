@@ -102,8 +102,12 @@ class AuthController
 
     public function allUsersAction()
     {
-        $users = $this->userModel->getAllUsers(); // Получаем пользователей
-        require_once __DIR__ . '/../views/pages/users.php'; // Загружаем представление
+        $users = $this->userModel->getAllUsers();
+        return [
+            'users' => $users,
+            'view' => 'users'
+        ];
+        // $this->render('users', ['users' => $users]); 
     }
 
 

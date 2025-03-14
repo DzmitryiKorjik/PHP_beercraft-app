@@ -1,7 +1,7 @@
-<section class="users">
+<div class="order-container users-container">
     <?php if (!empty($users)): ?>
         <h2>Liste des utilisateurs</h2>
-        <table class="users-table">
+        <table border="1" cellpadding="10" cellspacing="0">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -29,4 +29,4 @@
     <?php else: ?>
         <p>Aucun utilisateur trouvé.</p>
     <?php endif; ?>
-</section>
+    </div>

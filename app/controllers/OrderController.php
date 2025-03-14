@@ -22,8 +22,8 @@ class OrderController
     public function deleteOrderItem()
     {
         if (isset($_POST['order_id'])) {
-            $orderId = $_POST['order_id'];
-            $result = $this->orderModel->deleteOrder($orderId);
+            $id = $_POST['order_id'];
+            $result = $this->orderModel->deleteOrder($id);
             
             if ($result) {
                 header('Location: ' . BASE_URL . '?action=order');

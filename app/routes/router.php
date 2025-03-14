@@ -103,8 +103,9 @@ class Router
                     break;
 
                 case 'users':
-                    $this->authController->allUsersAction();
-                    $view = 'users';         
+                    $result = $this->authController->allUsersAction();
+                    extract($result);
+                    // $view = 'users';         
                     break;
 
                 case 'updateBeer':

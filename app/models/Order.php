@@ -13,35 +13,24 @@ class Order
     public function getOrder()
     {
         $stmt = $this->db->prepare("SELECT 
-                                        o.id,
-                                        o.user_id, 
-                                        o.total, 
-                                        o.status, 
-                                        o.created_at,
-                                        oi.beer_id,
-                                        oi.quantity,
-                                        oi.price
-                                    FROM orders o
-                                    LEFT JOIN order_items oi ON o.id = oi.order_id
-                                    ORDER BY o.user_id DESC
+                                        `id`,
+                                        `user_id`,
+                                        `beer_id`,
+                                        `quantity`
+                                        FROM cart ORDER BY id DESC
                                 ");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function deleteOrder($orderId)
+    public function deleteOrder($id)
     {
         try {
             $this->db->beginTransaction();
 
-            // Delete order items first
-            $stmtItems = $this->db->prepare("DELETE FROM `order_items` WHERE `order_id` = :orderId");
-            $stmtItems->bindParam(':orderId', $orderId, PDO::PARAM_INT);
-            $stmtItems->execute();
-
             // Then delete the order
-            $stmtOrder = $this->db->prepare("DELETE FROM `orders` WHERE `id` = :orderId");
-            $stmtOrder->bindParam(':orderId', $orderId, PDO::PARAM_INT);
+            $stmtOrder = $this->db->prepare("DELETE FROM `cart` WHERE `id` = :id");
+            $stmtOrder->bindParam(':id', $id, PDO::PARAM_INT);
             $stmtOrder->execute();
 
             $this->db->commit();
