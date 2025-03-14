@@ -11,8 +11,15 @@
                 <li><a href="<?= BASE_URL ?>">Accueil</a></li>
                 <li><a href="<?= BASE_URL ?>?action=contact">Contact</a></li>
                 <?php if (!empty($_SESSION['users']) && $_SESSION['users']['role'] === 'admin'): ?>
-                    <li><a href="<?= BASE_URL ?>?action=addBeer">Ajouter un produit</a></li>
-                    <li><a href="<?= BASE_URL ?>?action=order">Commandes</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Panneau de contrôle ▼</a>
+                        <div class="dropdown-menu">
+                            <a href="<?= BASE_URL ?>?action=order">Détails de la commande</a>
+                            <a href="<?= BASE_URL ?>?action=users">Utilisateur</a>
+                            <a href="<?= BASE_URL ?>?action=order">Liste de produits</a>
+                            <a href="<?= BASE_URL ?>?action=addBeer">Ajouter un produit</a>
+                        </div>
+                    </li>
                 <?php endif; ?>
                 <?php if (!empty($_SESSION['users'])): ?>
                     <li><a href="<?= BASE_URL ?>?action=signout">Déconnexion</a></li>

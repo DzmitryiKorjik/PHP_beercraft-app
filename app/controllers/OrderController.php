@@ -12,7 +12,7 @@ class OrderController
 
     public function listOrders()
     {
-        $orderItems = $this->orderModel->getOrderItems();
+        $orderItems = $this->orderModel->getOrder();
         return [
             'orderItems' => $orderItems,
             'view' => 'order'
@@ -21,11 +21,17 @@ class OrderController
 
     public function deleteOrderItem()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['order_item_id'])) {
-            $orderItemId = $_POST['order_item_id'];
-            $this->orderModel->deleteOrderItem($orderItemId);
-            header('Location: ' . BASE_URL . '?action=order');
-            exit;
+        if (isset($_POST['order_id'])) {
+            $orderId = $_POST['order_id'];
+            $result = $this->orderModel->deleteOrder($orderId);
+            
+            if ($result) {
+                header('Location: ' . BASE_URL . '?action=order');
+            } else {
+                $_SESSION['error'] = "Erreur lors de la suppression de la commande.";
+                header('Location: ' . BASE_URL . '?action=order');
+            }
+            exit();
         }
     }
 }

@@ -50,4 +50,12 @@ class User
     {
         return password_verify($password, $hashedPassword);
     }
+
+    public function getAllUsers()
+    {
+        // Prépare la requête pour récupérer tous les utilisateurs
+        $stmt = $this->db->query("SELECT `id`, `username`, `email`, `role`, `created_at` FROM users");
+        // $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

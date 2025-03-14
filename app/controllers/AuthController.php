@@ -100,13 +100,19 @@ class AuthController
         }
     }
 
+    public function allUsersAction()
+    {
+        $users = $this->userModel->getAllUsers(); // Получаем пользователей
+        require_once __DIR__ . '/../views/pages/users.php'; // Загружаем представление
+    }
+
+
     // Méthode pour afficher les erreurs
     public function error()
     {
         $errors = $_SESSION['errors'] ?? [];
         unset($_SESSION['errors']); // Nettoyage des erreurs après affichage
-        require "app/views/error.php";
-        exit; // Empêcher tout rendu supplémentaire
+        $this->render('error', ['errors' => $errors]);
     }
 
     // Méthode pour la déconnexion des utilisateurs
@@ -208,13 +214,13 @@ class AuthController
         $form_data = $_SESSION['form_data'] ?? [];
         unset($_SESSION['form_data']);
 
-        require "app/views/contact.php";
+        require "app/views/pages/contact.php";
     }
 
     // Méthode pour le rendu des vues
     private function render($view, $data = [])
     {
         extract($data);
-        require "app/views/{$view}.php";
+        require "app/views/pages/{$view}.php";
     }
 }

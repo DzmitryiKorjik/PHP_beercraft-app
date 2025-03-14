@@ -12,6 +12,7 @@ require_once 'app/controllers/BuyBeerController.php';
 require_once 'app/controllers/CheckoutController.php';
 require_once 'app/controllers/OrderController.php';
 
+
 /**
  * Classe Router
  * Gère les routes et les actions associées aux différentes pages de l'application.
@@ -94,7 +95,16 @@ class Router
                     break;
 
                 case 'deleteOrderItem':
-                    $this->orderController->deleteOrderItem();
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $this->orderController->deleteOrderItem();
+                    }
+                    header('Location: ' . BASE_URL . '?action=order');
+                    exit;
+                    break;
+
+                case 'users':
+                    $this->authController->allUsersAction();
+                    $view = 'users';         
                     break;
 
                 case 'updateBeer':
