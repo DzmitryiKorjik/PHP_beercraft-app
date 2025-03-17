@@ -24,41 +24,67 @@ This project aims to:
 
 ```
 Beercraft/
+|
 ├── README.md
 ├── app
 │   ├── controllers
 │   │   ├── AuthController.php
 │   │   ├── BeerController.php
 │   │   ├── BuyBeerController.php
-│   │   └── CheckoutController.php
+│   │   ├── CheckoutController.php
+│   │   └── OrderController.php
 │   ├── models
 │   │   ├── Beer.php
 │   │   ├── BuyBeer.php
 │   │   ├── Database.php
+│   │   ├── Order.php
 │   │   ├── StripeModel.php
 │   │   └── User.php
 │   ├── routes
 │   │   └── router.php
 │   └── views
-│       ├── home.php
-│       ├── cart.php
 │       ├── checkout.php
-│       ├── signin.php
-│       ├── signup.php
-│       ├── orderConfirmation.php
-│       ├── partials/
-│       └── ... (other pages)
+│       ├── layout.php
+│       ├── pages
+│       │   ├── 404.php
+│       │   ├── addBeer.php
+│       │   ├── cart.php
+│       │   ├── contact.php
+│       │   ├── error.php
+│       │   ├── home.php
+│       │   ├── listItems.php
+│       │   ├── order.php
+│       │   ├── orderBeers.php
+│       │   ├── orderConfirmation.php
+│       │   ├── paymentError.php
+│       │   ├── paymentSuccess.php
+│       │   ├── signin.php
+│       │   ├── signup.php
+│       │   ├── updateBeer.php
+│       │   └── users.php
+│       └── partials
+│           ├── footer.php
+│           ├── head.php
+│           └── header.php
 ├── assets
-│   ├── css/
-│   ├── js/
-│   ├── img/
-│   └── icons/
+│   ├── css
+│   │   └── style.css
+│   ├── icons
+│   │   └── buy-icon.svg
+│   ├── img
+│   │   └── page-404.jpg
+│   └── js
+│       ├── main.js
+│       └── script.js
+├── composer.json
+├── composer.lock
 ├── config
 │   └── config.php
 ├── index.php
-├── composer.json
 ├── robots.txt
-└── uploads/
+└── uploads
+    ├── 1741976530_67d473d2b55b4.jpg
+    └── default-beer.jpg
 ```
 
 ## Installation
