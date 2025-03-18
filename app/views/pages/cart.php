@@ -50,8 +50,8 @@
 
             <!-- Résumé du panier et actions -->
             <div class="cart-total">
-                <h2>Total: <?= number_format($total, 2) ?> €</h2>
-                <form action="<?= BASE_URL ?>?action=placeOrder&total=<?= $total ?>" method="POST">
+                <h2>Total: <?= number_format((float)$total, 2) ?> €</h2>
+                <form action="<?= BASE_URL ?>?action=placeOrder&total=<?= (float)$total ?>" method="POST">
                     <button type="submit" class="checkout-button">Procéder au paiement</button>
                 </form>
             </div>

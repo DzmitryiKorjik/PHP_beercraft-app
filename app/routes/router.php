@@ -13,7 +13,6 @@ require_once 'app/controllers/AuthController.php';
 require_once 'app/controllers/BeerController.php';
 require_once 'app/controllers/BuyBeerController.php';
 require_once 'app/controllers/CheckoutController.php';
-require_once 'app/controllers/OrderController.php';
 
 
 /**
@@ -26,7 +25,6 @@ class Router
     private $beerController;
     private $buyBeerController;
     private $checkoutController;
-    private $orderController;
 
     public function __construct()
     {
@@ -35,7 +33,6 @@ class Router
         $this->beerController = new BeerController();
         $this->buyBeerController = new BuyBeerController();
         $this->checkoutController = new CheckoutController();
-        $this->orderController = new OrderController();
     }
 
     /**
@@ -65,7 +62,7 @@ class Router
                     }
                     $view = 'signin'; // Affichage du formulaire de connexion
                     break;
-                    
+
                 case 'error':
                     // Убедитесь, что ошибка обрабатывается только один раз
                     if (!isset($_SESSION['error_handled'])) {
@@ -99,24 +96,35 @@ class Router
                     break;
 
                 case 'order':
-                    $result = $this->orderController->listOrders();
-                    extract($result);
-                    break;
-
-                case 'deleteOrderItem':
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                        $this->orderController->deleteOrderItem();
+                    if (!isset($_SESSION['users'])) {
+                        header('Location: ' . BASE_URL . '?action=signin');
+                        exit;
                     }
-                    header('Location: ' . BASE_URL . '?action=order');
-                    exit;
-                    break;
+
+                    if ($_SESSION['users']['role'] === 'admin') {
+                        $result = $this->buyBeerController->getAllOrders();
+                        $viewData = [
+                            'view' => 'adminOrders',
+                            'orders' => $result['orders'] ?? []
+                        ];
+                    } else {
+                        $cartData = $this->buyBeerController->buyBeer();
+                        $viewData = [
+                            'view' => 'cart',
+                            'cartItems' => $cartData['cartItems'] ?? [],
+                            'total' => floatval($cartData['total'] ?? 0)
+                        ];
+                    }
+                    extract($viewData);
+                    require_once 'app/views/layout.php';
+                    return;
 
                 case 'users':
                     $result = $this->authController->allUsersAction();
                     extract($result);
                     // $view = 'users';         
                     break;
-                    
+
                 case 'updateBeer':
                     // Mise à jour d'une bière existante
                     $id = $_GET['id'] ?? null;
@@ -174,11 +182,15 @@ class Router
                     break;
 
                 case 'removeFromCart':
-                    $id = $_GET['id'] ?? null;
-                    if ($id) {
-                        $this->buyBeerController->removeFromCart($id);
+                    $beerId = $_GET['beerId'] ?? $_GET['id'] ?? null;
+                    if ($beerId) {
+                        $this->buyBeerController->removeFromCart($beerId);
                     }
-                    header('Location: ' . BASE_URL . '?action=buyBeer');
+                    if (isset($_GET['type']) && $_GET['type'] === 'order') {
+                        header('Location: ' . BASE_URL . '?action=order');
+                    } else {
+                        header('Location: ' . BASE_URL . '?action=buyBeer');
+                    }
                     exit;
                     break;
 
@@ -217,6 +229,24 @@ class Router
                     $view = 'listItems';
                     break;
 
+                case 'deleteOrderItem':
+                    if (!isset($_SESSION['users']) || $_SESSION['users']['role'] !== 'admin') {
+                        header('Location: ' . BASE_URL . '?action=signin');
+                        exit;
+                    }
+                    $orderId = $_GET['id'] ?? null;
+                    if ($orderId) {
+                        $orderModel = new Order();
+                        if ($orderModel->deleteOrderById($orderId)) {
+                            $_SESSION['success'] = "Commande supprimée avec succès";
+                        } else {
+                            $_SESSION['error'] = "Erreur lors de la suppression de la commande";
+                        }
+                    }
+                    header('Location: ' . BASE_URL . '?action=order');
+                    exit;
+                    break;
+
                 default:
                     require_once 'app/views/pages/404.php';
                     return;
@@ -233,7 +263,6 @@ class Router
                 extract($viewData);
                 require_once 'app/views/layout.php';
             }
-
         } catch (Exception $e) {
             $_SESSION['errors'] = ['Une erreur inattendue s\'est produite: ' . $e->getMessage()];
             header('Location: ' . BASE_URL . '?action=error');

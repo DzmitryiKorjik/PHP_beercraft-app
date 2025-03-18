@@ -72,4 +72,8 @@ class Database
     public function lastInsertId() {
         return $this->connection->lastInsertId();
     }
+
+    public function prepare($query) {
+        return $this->connection->prepare($query);
+    }
 }

@@ -1,34 +1,44 @@
 <div class="order-container">
-    <?php if (!empty($orderItems)): ?>
-        <h2>Liste des commandes</h2>
-        <table border="1" cellpadding="10" cellspacing="0">
+    <h2>Votre commande</h2>
+    <?php if (!empty($cartItems)): ?>
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Id commande</th>
-                    <th>Id utilisateur</th>
-                    <th>Id bière</th>
+                    <th>Produit</th>
+                    <th>Prix unitaire</th>
                     <th>Quantité</th>
+                    <th>Total</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($orderItems as $orderItem): ?>
+                <?php foreach ($cartItems as $item): ?>
                     <tr>
-                        <td><?= htmlspecialchars($orderItem['id']) ?></td>
-                        <td><?= htmlspecialchars($orderItem['user_id']) ?></td>
-                        <td><?= htmlspecialchars($orderItem['beer_id']) ?></td>
-                        <td><?= htmlspecialchars($orderItem['quantity']) ?></td>
+                        <td><?= htmlspecialchars($item['title'] ?? '') ?></td>
+                        <td><?= number_format(floatval($item['price'] ?? 0), 2) ?> €</td>
                         <td>
-                            <form action="<?= BASE_URL ?>?action=deleteOrderItem" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?');">
-                                <input type="hidden" name="order_id" value="<?= htmlspecialchars($orderItem['id']) ?>">
-                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                            <form action="<?= BASE_URL ?>?action=updateQuantity" method="POST" class="d-inline">
+                                <input type="hidden" name="beer_id" value="<?= $item['beer_id'] ?? '' ?>">
+                                <input type="number" name="quantity" value="<?= intval($item['quantity'] ?? 1) ?>" min="1" max="99" class="form-control" style="width: 70px" onchange="this.form.submit()">
                             </form>
+                        </td>
+                        <td><?= number_format(floatval(($item['price'] ?? 0) * ($item['quantity'] ?? 1)), 2) ?> €</td>
+                        <td>
+                            <a href="<?= BASE_URL ?>?action=removeFromCart&id=<?= $item['beer_id'] ?? '' ?>" class="btn btn-danger btn-sm">Supprimer</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
+                <tr>
+                    <td colspan="3" class="text-right"><strong>Total</strong></td>
+                    <td><strong><?= number_format(floatval($total ?? 0), 2) ?> €</strong></td>
+                    <td></td>
+                </tr>
             </tbody>
         </table>
+        <div class="text-right mt-3">
+            <a href="<?= BASE_URL ?>?action=checkout" class="btn btn-primary">Procéder au paiement</a>
+        </div>
     <?php else: ?>
-        <p>Aucune commande trouvée.</p>
+        <p>Votre panier est vide.</p>
     <?php endif; ?>
 </div>

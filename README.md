@@ -31,13 +31,11 @@ Beercraft/
 │   │   ├── AuthController.php
 │   │   ├── BeerController.php
 │   │   ├── BuyBeerController.php
-│   │   ├── CheckoutController.php
-│   │   └── OrderController.php
+│   │   └── CheckoutController.php
 │   ├── models
 │   │   ├── Beer.php
 │   │   ├── BuyBeer.php
 │   │   ├── Database.php
-│   │   ├── Order.php
 │   │   ├── StripeModel.php
 │   │   └── User.php
 │   ├── routes

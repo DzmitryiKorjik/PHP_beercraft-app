@@ -1,5 +1,6 @@
 <?php 
 require_once 'app/models/BuyBeer.php';
+require_once 'app/models/Order.php';
 
 /**
  * Contrôleur de gestion du panier
@@ -7,9 +8,19 @@ require_once 'app/models/BuyBeer.php';
  */
 class BuyBeerController {
     private $model;
+    private $orderModel;
+
+    private function checkAuth() {
+        if (!isset($_SESSION['users'])) {
+            header('Location: ' . BASE_URL . '?action=signin');
+            exit;
+        }
+        return $_SESSION['users']['id'];
+    }
 
     public function __construct() {
         $this->model = new BuyBeer();
+        $this->orderModel = new Order();
     }
 
     /**
@@ -18,16 +29,11 @@ class BuyBeerController {
      * @return array|void Données du panier ou redirection
      */
     public function buyBeer($beerId = null) {
-        if (!isset($_SESSION['users'])) {
-            header('Location: ' . BASE_URL . '?action=signin');
-            exit;
-        }
-
-        $userId = $_SESSION['users']['id'];
+        $userId = $this->checkAuth();
 
         if ($beerId) {
             $this->model->addToCart($beerId, $userId);
-            header('Location: ' . BASE_URL . '?action=buyBeer');
+            header('Location: ' . BASE_URL . '?action=order');
             exit;
         }
 
@@ -45,14 +51,30 @@ class BuyBeerController {
      * @param int $beerId ID de la bière à supprimer
      */
     public function removeFromCart($beerId) {
-        if (!isset($_SESSION['users'])) {
-            header('Location: ' . BASE_URL . '?action=signin');
-            exit;
+        $userId = $this->checkAuth();
+        
+        if (isset($_GET['type']) && $_GET['type'] === 'order') {
+            if ($_SESSION['users']['role'] === 'admin') {
+                $userEmail = $_GET['email'] ?? '';
+                if (empty($userEmail) || empty($beerId)) {
+                    header('Location: ' . BASE_URL . '?action=order&error=invalid_params');
+                    exit;
+                }
+                
+                $success = $this->orderModel->deleteOrder($beerId, $userEmail);
+                if (!$success) {
+                    error_log("Failed to delete order: beerId=$beerId, email=$userEmail");
+                    header('Location: ' . BASE_URL . '?action=order&error=delete_failed');
+                    exit;
+                }
+                
+                header('Location: ' . BASE_URL . '?action=order&success=true');
+                exit;
+            }
+        } else {
+            $this->model->removeFromCart($beerId, $userId);
+            header('Location: ' . BASE_URL . '?action=buyBeer');
         }
-
-        $userId = $_SESSION['users']['id'];
-        $this->model->removeFromCart($beerId, $userId);
-        header('Location: ' . BASE_URL . '?action=buyBeer');
         exit;
     }
 
@@ -61,35 +83,31 @@ class BuyBeerController {
      * Vérifie la validité des données avant la mise à jour
      */
     public function updateQuantity() {
-        if (!isset($_SESSION['users']) || !isset($_POST['beer_id']) || !isset($_POST['quantity'])) {
+        $userId = $this->checkAuth();
+        
+        if (!isset($_POST['beer_id']) || !isset($_POST['quantity'])) {
             header('Location: ' . BASE_URL . '?action=buyBeer');
             exit;
         }
 
-        $userId = $_SESSION['users']['id'];
-        $beerId = $_POST['beer_id'];
-        $quantity = max(1, min(99, (int)$_POST['quantity']));
-
-        $this->model->updateQuantity($beerId, $userId, $quantity);
+        $this->model->updateQuantity(
+            $_POST['beer_id'],
+            $userId,
+            max(1, min(99, (int)$_POST['quantity']))
+        );
+        
         header('Location: ' . BASE_URL . '?action=buyBeer');
         exit;
     }
 
-    /**
-     * Traitement du paiement
-     */
-    public function placeOrder() {
-        if (!isset($_SESSION['users'])) {
-            header('Location: ' . BASE_URL . '?action=signin');
+    public function getAllOrders() {
+        if (!isset($_SESSION['users']) || $_SESSION['users']['role'] !== 'admin') {
+            header('Location: ' . BASE_URL . '?action=home');
             exit;
         }
-
-        $userId = $_SESSION['users']['id'];
-        $result = $this->model->placeOrder($userId);
-        
-        // Après une commande réussie, nous sommes redirigés vers la page de confirmation
-        header('Location: ' . BASE_URL . '?action=checkout');
-        exit;
+        return [
+            'orders' => $this->orderModel->getAllOrders()
+        ];
     }
 }
 ?>

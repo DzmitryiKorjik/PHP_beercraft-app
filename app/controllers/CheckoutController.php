@@ -9,13 +9,21 @@ class CheckoutController {
     }
 
     public function handleCheckout($total) {
+        // Clean and convert the total to a proper float
+        $total = (float)preg_replace('/[^0-9.]/', '', $total);
+        
+        if (!is_numeric($total) || $total <= 0) {
+            header("Location: " . BASE_URL . "?action=paymentError");
+            exit();
+        }
+
         $checkoutSession = $this->stripeModel->createCheckoutSession(
             'Bière artisanale', 
             'eur',              
-            $total * 100,       // Use $total variable and convert to cents
+            round($total * 100), // Convert to cents and ensure integer
             1,                  
-            'http://localhost/beercraft/?action=paymentSuccess', // Success URL
-            'http://localhost/beercraft/?action=paymentError'    // Cancel URL
+            'http://localhost/beercraft/?action=paymentSuccess',
+            'http://localhost/beercraft/?action=paymentError'
         );
 
         header("Location: " . $checkoutSession->url);
