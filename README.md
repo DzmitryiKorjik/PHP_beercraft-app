@@ -24,7 +24,6 @@ This project aims to:
 
 ```
 Beercraft/
-|
 ├── README.md
 ├── app
 │   ├── controllers
@@ -36,6 +35,7 @@ Beercraft/
 │   │   ├── Beer.php
 │   │   ├── BuyBeer.php
 │   │   ├── Database.php
+│   │   ├── Order.php
 │   │   ├── StripeModel.php
 │   │   └── User.php
 │   ├── routes
@@ -46,6 +46,7 @@ Beercraft/
 │       ├── pages
 │       │   ├── 404.php
 │       │   ├── addBeer.php
+│       │   ├── adminOrders.php
 │       │   ├── cart.php
 │       │   ├── contact.php
 │       │   ├── error.php
@@ -80,9 +81,7 @@ Beercraft/
 │   └── config.php
 ├── index.php
 ├── robots.txt
-└── uploads
-    ├── 1741976530_67d473d2b55b4.jpg
-    └── default-beer.jpg
+└── uploads/
 ```
 
 ## Installation
