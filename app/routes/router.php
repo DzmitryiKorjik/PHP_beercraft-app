@@ -80,13 +80,14 @@ class Router
                     $view = 'error'; 
                     break;
 
-                // Gestion de la page contact
+                // Gestion de la page contact     
                 case 'contact':
                     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                        $this->contactController->submit();
+                        $this->contactController->submit($_POST);
                     } else {
                         $this->contactController->index();
                     }
+                    return;
                     break;
 
                 // Ajout d'une bière
